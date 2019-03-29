@@ -1,0 +1,133 @@
+---
+title: "Mais sobre o formato de distribuições"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+Além de localizar centro e extremos nas distribuições valores, algumas outras características úteis para descrever uma distribuição são: 
+
+1. Quão assimétrica ela é? 
+2. Quão concentrada ou espalhada ela é? 
+3. Ela tem uma cauda? Duas? Longas?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(ggbeeswarm)
+library(gridExtra)
+theme_set(theme_bw())
+```
+
+Os dados de clima tem exemplos de distribuições mais e menos simétricas e mais e menos concentradas.
+
+```{r read}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTdddddd")
+
+glimpse(climas)
+```
+
+## Temperatura x chuva em CG
+
+Repare como a distribuição de quantidade de chuvas semanal é muito mais assimétrica que a de temperaturas médias. Ela tem uma assimetria com cauda maior à direita. E longa. 
+
+Abaixo colocamos várias visualizações das distribuições para você explorar como os formatos diferentes aparecem em diferentes visualizações.
+
+```{r}
+# histograma
+cg = climas %>% 
+    filter(cidade == "Campina Grande") 
+
+hist_chuvas = cg %>% 
+    ggplot(aes(x = chuva)) + 
+    geom_histogram(binwidth = 10, color = "#F6511D", fill = "white")
+
+hist_temperatura = cg %>% 
+    ggplot(aes(x = tmedia)) + 
+    geom_histogram(binwidth = .5, color = "#F6511D", fill = "white")  
+
+grid.arrange(hist_chuvas, hist_temperatura, ncol = 2)
+
+# densidade
+dens_chuvas = cg %>% 
+    ggplot(aes(x = chuva)) + 
+    geom_density(fill = "#F7B2AD") 
+
+dens_temperatura = cg %>% 
+    ggplot(aes(x = tmedia)) + 
+    geom_density(fill = "#F7B2AD") 
+
+grid.arrange(dens_chuvas, dens_temperatura, ncol = 2)
+
+# boxplot
+box_chuvas = cg %>% 
+    ggplot(aes(x = cidade, y = chuva)) + 
+    geom_boxplot(coef = 1000, width = .2) 
+
+box_temperatura = cg %>% 
+    ggplot(aes(x = cidade, y = tmedia)) + 
+    geom_boxplot(coef = 1000, width = .2) 
+
+grid.arrange(box_chuvas, box_temperatura, ncol = 3)
+```
+
+A disribuição de temperaturas médias nem é tão simétrica assim, tendo uma cauda maior à esquerda. Às vezes se diz que há uma assimetria (ou skewness) positiva em casos como o das chuvas, e negativa no caso da temperatura média. 
+
+Interessante, dependendo da época em que olhemos para CG, a distribuição é assimétrica com cauda à esquerda ou à direita: 
+
+```{r}
+cg %>%
+    mutate(verao = mes > 8 | mes < 3) %>% 
+    ggplot(aes(x = tmax, fill = verao)) + 
+    geom_density(alpha = .4)
+```
+
+Um exercício legal é procurar padrões nos gráficos de densidade (ou histogramas) das temperaturas em diferentes anos:
+
+```{r}
+cg %>%
+    filter(ano >= 2008) %>% 
+    ggplot(aes(x = tmedia)) + 
+    geom_density(alpha = .4, fill = "salmon") + 
+    facet_wrap(~ ano)
+```
+
+O mesmo pode ser feito com boxplot também. Compare o que você vê em um e outro.
+
+```{r}
+cg %>%
+    filter(ano >= 1998, ano < 2019) %>% 
+    ggplot(aes(x = ano, y = tmedia, group = ano)) + 
+    geom_boxplot(alpha = .4, fill = "salmon", coef = 1000) 
+```
+
+
+## Temperatura x temperatura
+
+Para a concentração de valores em torno da moda, embora ambas sejam bastante concentradas, a chuva em CG é bem mais concentrada em torno do zero que a chuva em JP: 
+
+```{r}
+climas %>% 
+    ggplot(aes(x = chuva)) + 
+    geom_histogram(binwidth = 1, color = "#00A6ED", fill = "white") + 
+    geom_rug(alpha = .1) + 
+    facet_wrap(~ cidade)
+
+climas %>% 
+    ggplot(aes(x = chuva)) + 
+    geom_density(fill = "#00A6ED") + 
+    geom_rug(alpha = .1) + 
+    facet_wrap(~ cidade)
+
+climas %>% 
+    ggplot(aes(x = cidade, y = chuva, color = cidade)) + 
+    geom_boxplot(coef = 1000, width = .2) + 
+    geom_rug(alpha = .05) 
+
+climas %>% 
+    ggplot(aes(x = cidade, y = chuva, color = cidade)) + 
+    geom_quasirandom(alpha = .5, size = 1) 
+```
+
