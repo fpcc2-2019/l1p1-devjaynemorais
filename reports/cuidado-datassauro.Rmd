@@ -1,0 +1,65 @@
+---
+title: "Limitações de sumários estatísticos"
+output: html_notebook
+theme: sandstone
+---
+
+```{r warning=FALSE}
+library(tidyverse)
+library(datasauRus)
+theme_set(theme_bw())
+```
+
+```{r}
+glimpse(datasaurus_dozen)
+```
+
+
+```{r}
+datasaurus_dozen %>% 
+  group_by(dataset) %>% 
+  summarise_all(funs(mean, sd, median))
+```
+
+## Correlações
+
+```{r}
+
+datasaurus_dozen %>% 
+  group_by(dataset) %>% 
+  summarise(correlacao = cor(x, y))
+
+```
+
+
+## Boxplots
+
+```{r}
+datasaurus_dozen %>% 
+  group_by(dataset) %>% 
+  ggplot(aes(x = dataset, y = y)) + 
+  geom_boxplot()
+```
+
+Mas quando olhamos os dados todos...
+
+```{r}
+ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
+  geom_point()+
+  theme_void()+
+  theme(legend.position = "none")+
+  facet_wrap(~dataset, ncol=3)
+
+```
+
+
+```{r}
+datasaurus_dozen %>% 
+    filter(dataset == "dino") %>% 
+    ggplot(aes(x=x, y=y, colour=dataset))+
+    geom_point(size = 2)+
+    # theme_void()+
+    theme(legend.position = "none") + 
+    labs(title = "Lembre de mim!")
+```
+
