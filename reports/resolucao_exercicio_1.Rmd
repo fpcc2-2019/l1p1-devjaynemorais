@@ -1,0 +1,94 @@
+---
+title: "Resolução de Exercícios"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(ggbeeswarm)
+theme_set(theme_bw())
+```
+
+```{r read}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTdddddd")
+
+glimpse(climas)
+```
+# Temperatura 
+
+## Qual foi o São João mais frio de CG que está nos nossos dados?
+
+  Para o cálculo do São João mais frio, foi levado em consideração as médias de temperatura entre todos as semanas do mês de junho de 1995 a 2018.
+  Dito isto, foi possível observar que o São João que possui a menor média de temperatura foi o do ano de 2004.
+
+```{r read}
+climas %>% 
+    group_by(cidade, ano, mes)  %>%
+    filter(mes %in% c("6"), cidade %in% c("Campina Grande")) %>%
+    summarise(media_temperatura = mean(tmedia)) %>%
+    ggplot(mapping = aes(x = ano, y = media_temperatura)) + 
+    geom_col() +
+    xlab("Ano") +
+    ylab("Média de Temperatura (ºC)") + 
+    ylim(0, 30)
+```
+
+## Onde é mais quente?
+
+  Para determinar qual o local mais quente, considerou-se que a média de temperatura desde o ano de 1995 para definir o quão quente é um determinado local. 
+  Dito isto, foi possível observar que a cidade de João Pessoa possui sua média de temperatura superior à cidade de Campina Grande.
+  
+```{r read}
+climas %>% 
+    group_by(cidade)  %>%
+   # filter(mes %in% c("6")) %>%
+    summarise(media_temperatura = mean(tmedia)) %>%
+    ggplot(mapping = aes(x = cidade, y = media_temperatura)) + 
+    geom_col() +
+    xlab("Cidade") +
+    ylab("Média de Temperatura (ºC)") + 
+    ylim(0, 30)
+
+```
+
+# Chuva
+
+## No geral, onde chove mais?
+
+  Para determinar o local que acontecem mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde 1995.
+  Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas que em Campina Grande.
+  
+```{r read}
+climas %>% 
+    group_by(cidade)  %>%
+   # filter(mes %in% c("6")) %>%
+    summarise(media_chuva = mean(chuva)) %>%
+    ggplot(mapping = aes(x = cidade, y = media_chuva)) + 
+    geom_col() +
+    xlab("Cidade") +
+    ylab("Média de Chuva (ml)")
+
+```
+
+## Quanto chove por semana em JP e CG?
+
+  Para determinar quanto chove por semana nas cidades, considerou-se o a média de milímetros de chuva por cada cidade desde 1995.
+  Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas por semana que em Campina Grande.
+  
+```{r read}
+climas %>% 
+    group_by(cidade)  %>%
+   # filter(mes %in% c("6")) %>%
+    summarise(media_por_semana = mean(chuva)) %>%
+    ggplot(mapping = aes(x = cidade, y = media_por_semana)) + 
+    geom_col() +
+    xlab("Cidade") +
+    ylab("Média de Chuva por semana (ml)")
+
+```
