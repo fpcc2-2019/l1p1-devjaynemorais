@@ -14,7 +14,7 @@ library(ggbeeswarm)
 theme_set(theme_bw())
 ```
 
-```{r read}
+```{r read1}
 climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
                   col_types = "cTdddddd")
 
@@ -27,7 +27,7 @@ glimpse(climas)
   Para o cálculo do São João mais frio, foi levado em consideração as médias de temperatura entre todos as semanas do mês de junho de 1995 a 2018.
   Dito isto, foi possível observar que o São João que possui a menor média de temperatura foi o do ano de 2004.
 
-```{r read}
+```{r read2}
 climas %>% 
     group_by(cidade, ano, mes)  %>%
     filter(mes %in% c("6"), cidade %in% c("Campina Grande")) %>%
@@ -44,7 +44,7 @@ climas %>%
   Para determinar qual o local mais quente, considerou-se que a média de temperatura desde o ano de 1995 para definir o quão quente é um determinado local. 
   Dito isto, foi possível observar que a cidade de João Pessoa possui sua média de temperatura superior à cidade de Campina Grande.
   
-```{r read}
+```{r read3}
 climas %>% 
     group_by(cidade)  %>%
    # filter(mes %in% c("6")) %>%
@@ -64,7 +64,7 @@ climas %>%
   Para determinar o local que acontecem mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde 1995.
   Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas que em Campina Grande.
   
-```{r read}
+```{r read4}
 climas %>% 
     group_by(cidade)  %>%
    # filter(mes %in% c("6")) %>%
@@ -79,9 +79,9 @@ climas %>%
 ## Quanto chove por semana em JP e CG?
 
   Para determinar quanto chove por semana nas cidades, considerou-se o a média de milímetros de chuva por cada cidade desde 1995.
-  Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas por semana que em Campina Grande.
+  Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas por semana do que a cidade de Campina Grande.
   
-```{r read}
+```{r read5}
 climas %>% 
     group_by(cidade)  %>%
    # filter(mes %in% c("6")) %>%
