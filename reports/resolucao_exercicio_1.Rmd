@@ -7,6 +7,7 @@ theme: sandstone
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+install.packages("here")
 library(tidyverse)
 library(here)
 library(lubridate)
@@ -37,6 +38,26 @@ climas %>%
     xlab("Ano") +
     ylab("Média de Temperatura (ºC)") + 
     ylim(0, 30)
+
+climas %>% 
+    group_by(cidade, ano, mes)  %>%
+    filter(mes %in% c("6"), cidade %in% c("Campina Grande")) %>%
+    summarise(media_temperatura = mean(tmedia)) %>%
+    ggplot(mapping = aes(x = ano, y = media_temperatura)) + 
+    geom_jitter() +
+    xlab("Ano") +
+    ylab("Média de Temperatura (ºC)") +
+    scale_x_continuous(breaks = seq())
+
+climas %>% 
+    group_by(cidade, ano, mes)  %>%
+    filter(mes %in% c("6")) %>%
+    summarise(media_temperatura = mean(tmedia)) %>%
+    ggplot(mapping = aes(x = ano, y = media_temperatura, color = cidade)) + 
+    geom_line() +
+    xlab("Ano") +
+    ylab("Média de Temperatura (ºC)") +
+    scale_x_continuous(breaks = seq())
 ```
 
 ## Onde é mais quente?
