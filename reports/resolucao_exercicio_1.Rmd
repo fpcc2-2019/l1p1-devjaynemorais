@@ -26,24 +26,24 @@ glimpse(climas)
 
 ## Qual foi o São João mais frio de CG que está nos nossos dados?
   
-  Considera-se para o cálculo do período do São João todas as semanas do mês de Junho e o intervalo de anos entre 1998 e 2018 (últimos 20 anos). Para isto, como há várias ocorrências de datas neste mesmo mês, realizou-se o cálculo da média das temperaturas mínimas do respectivo mês.
+  Considera-se para o cálculo do período do São João todas as semanas do mês de Junho e o intervalo de anos entre 1998 e 2018 (20 anos) da cidade de Campina grande. Para isto, como há várias ocorrências de datas neste mesmo mês, realizou-se o cálculo da média das temperaturas mínimas do respectivo mês.
   
-  E portanto, embora em 29 de junho de 2003 tenha ocorrido o dia de junho mais frio de todos os anos desse intervalo (Gráfico 1), a média das temperaturas mínimas mostra que o período do São João do ano de 2008 foi o que possui as menores valores (Gráfico 2). Logo, baseado nessas evidências, podemos concluir que o São João mais frio foi o do ano de 2008.
+  E portanto, embora em junho de 2003 tenha atingido o pico mais alto como o dia mais frio de todos os junho's de todos esses anos desse intervalo (Gráfico 1 - buscou-se a menor temperatura), o cáculo da média das temperaturas mínimas mostra que o período do São João do ano de 2008 foi o que possui as menores valores (Gráfico 2 - buscou-se a média das menores temperaturas). Logo, baseado nessas evidências, podemos concluir que o São João mais frio foi o do ano de 2008 para a cidade de Campina grande.
 
   
 
 ```{r read2}
 
 climas %>% 
-    group_by(cidade, ano, mes)  %>%
+    group_by(cidade, ano)  %>%
     filter(cidade %in% c("Campina Grande"), ano >= 1998, mes %in% c("6")) %>%
     summarise(temperatura = min(tmin)) %>%
     ggplot(mapping = aes(x = ano, y = temperatura, color = cidade)) + 
     geom_line() +
-    geom_point() +
     xlab("Ano") +
     ylab("Média de Temperatura (ºC)") +
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 2)) +
+    scale_y_continuous(breaks = seq(from = 1, to = 30, by = 0.2))  +
     ggtitle("Gráfico 1")
 
 climas %>% 
@@ -56,14 +56,15 @@ climas %>%
     xlab("Ano") +
     ylab("Média de Temperatura (ºC)") +
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 2)) +
+    scale_y_continuous(breaks = seq(from = 1, to = 30, by = 0.1))  +
     ggtitle("Gráfico 2")
 
 ```
 
 ## Onde é mais quente?
 
-  Para determinar qual o local mais quente, considerou-se que a média da média de temperatura desde o ano de 1998 a 2018 (últimos 20 anos). 
-  Dito isto, foi possível observar que a cidade de João Pessoa possui a média de temperatura mais elevada que a cidade de Campina Grande.
+  Para determinar qual o local mais quente, considerou-se que a média da média de temperatura desde o ano de 1998 a 2018 (20 anos). 
+  Dito isto, foi possível observar no gráfico 3 que a cidade de João Pessoa (aproximadamente 28ºC) possui a média de temperatura mais elevada que a cidade de Campina Grande (aproximadamente 25ºC).
   
 ```{r read3}
 climas %>% 
@@ -76,7 +77,8 @@ climas %>%
     xlab("Ano") +
     ylab("Média de Temperatura (ºC)") +
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 2))  +
-    ggtitle("Gráfico 4")
+    scale_y_continuous(breaks = seq(from = 1, to = 30, by = 0.5))  +
+    ggtitle("Gráfico 3")
 
 
 ```
@@ -85,8 +87,8 @@ climas %>%
 
 ## No geral, onde chove mais?
 
-  Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 1998 a 2018 (últimos 20 anos).
-  Disto isto, é possível observar que na cidade de João Pessoa a média de chuvas é maior que a média de chuvas em Campina Grande.
+  Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 1998 a 2018 (20 anos).
+  Disto isto, é possível observar nos gráficos 4 e 5 que na cidade de João Pessoa (aproximadamente 35.4 ml) a média de chuvas é maior que a média de chuvas em Campina Grande (aproximadamente 13.3 ml).
   
 ```{r read4}
 
@@ -98,11 +100,11 @@ climas %>%
     geom_line() +
     geom_point() +
     #geom_smooth(aes(x = ano, y = media_chuva), method = lm, se = TRUE) +
-    xlab("Cidade") +
+    xlab("Ano") +
     ylab("Média de Chuva (ml)") +
     ggtitle("Gráfico 4") + 
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 2))  +
-    ggtitle("Gráfico 4")
+    scale_y_continuous(breaks = seq(from = 1, to = 300, by = 2))  
 
 climas %>% 
     group_by(cidade, ano)  %>%
@@ -111,54 +113,52 @@ climas %>%
     ggplot(mapping = aes(x = ano, y = media_chuva, color = cidade)) + 
     geom_boxplot() +
     geom_jitter(width = .2, alpha = .5, height = 0.1) + 
-    xlab("Cidade") +
+    xlab("Ano") +
     ylab("Média de Chuva (ml)") +
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 2))  +
-    ggtitle("Gráfico 4")
+    scale_y_continuous(breaks = seq(from = 1, to = 300, by = 2))  +
+    ggtitle("Gráfico 5")
 
 ```
 
-## Quanto chove por semana em JP e CG?
+# A distribuição é diferente em meses específicos? 
+    
+    Para determinar a variação mensal de milímetros de chuva, considerou-se o a média de milímetros de chuva por cidade em dois diferentes intervalos de anos:
+    De acordo com o gráfico 6, para o ano de 2018 a maior diferença concentra-se entre os meses de julho, março e abril respectivamente.
+    De acordo com o gráfico 7, já para uma distribuição entre os anos de 2008 a 2018 temos que a maior diferença de distribuição de milímetros de chuvas entre os meses são junho, maio e abril.
 
-  Para determinar quanto chove por semana nas cidades, considerou-se o a média de milímetros de chuva por cada cidade desde 1998 a 2018 (últimos 20 anos).
-  Disto isto, é possível observar que na cidade de João Pessoa ocorrem mais chuvas por semana do que a cidade de Campina Grande.
   
 ```{r read5}
-climas %>% 
-    group_by(cidade, ano)  %>%
-    filter( ano == 2018) %>%
-    summarise(media_por_semana = mean(chuva)) %>%
-    ggplot(mapping = aes(x = cidade, y = media_por_semana)) + 
-    geom_col() +
-    xlab("Cidade") +
-    ylab("Média de Chuva por semana (ml)")
 
 climas %>% 
     group_by(cidade, ano, mes)  %>%
-    filter(ano >= 1998) %>%
+    filter(ano == 2018) %>%
     summarise(media_chuva = mean(chuva)) %>%
     ggplot(mapping = aes(x = mes, y = media_chuva, color = cidade)) + 
-    geom_boxplot() +
-    #geom_point() +
+    geom_line() +
+    geom_point() +
     #geom_smooth(aes(x = ano, y = media_chuva), method = lm, se = TRUE) +
-    xlab("Cidade") +
+    xlab("Mês (2018)") +
     ylab("Média de Chuva (ml)") +
-    ggtitle("Gráfico 4") + 
-    scale_x_continuous(breaks = seq(from = 0, to = 13, by = 1)) +
-    scale_y_continuous(breaks = seq(from = 0, to = 180, by = 10)) 
+    ggtitle("Gráfico 6") + 
+    scale_x_continuous(breaks = seq(from = 0, to = 2018, by = 1))  +
+    scale_y_continuous(breaks = seq(from = 0, to = 300, by = 5))  
+
+
 
 climas %>% 
-    group_by(cidade, ano, mes)  %>%
-    filter(ano >= 1998) %>%
+    group_by(cidade, mes)  %>%
+    filter(ano >= 2008) %>%
     summarise(media_chuva = mean(chuva)) %>%
     ggplot(mapping = aes(x = mes, y = media_chuva, color = cidade)) + 
-    geom_density_ridges(scale = 4, stat = "density") +
-    #geom_point() +
-    #geom_smooth(aes(x = ano, y = media_chuva), method = lm, se = TRUE) +
-    xlab("Cidade") +
+    geom_line() +
+    geom_point() +
+    #geom_smooth(aes(x = mes, y = media_chuva), method = lm, se = TRUE) +
+    xlab("Mês (2008-2018)") +
     ylab("Média de Chuva (ml)") +
-    ggtitle("Gráfico 4") + 
-    scale_x_continuous(breaks = seq(from = 0, to = 13, by = 1)) +
-    scale_y_continuous(breaks = seq(from = 0, to = 180, by = 10)) 
+    ggtitle("Gráfico 7") + 
+    scale_x_continuous(breaks = seq(from = 0, to = 2018, by = 1))  +
+    scale_y_continuous(breaks = seq(from = 0, to = 300, by = 5))  
+
 
 ```
