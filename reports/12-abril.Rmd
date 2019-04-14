@@ -106,23 +106,31 @@ max_anuais %>% ggplot(mapping = aes(ano, Value, fill = Type)) + scale_y_continuo
 
 ## No geral, onde chove mais?
 
-  Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 2010 a 2018 (8 anos).
-  Disto isto, é possível observar nos gráficos que na cidade de João Pessoa a média de chuvas é maior que a média de chuvas em Campina Grande.
+    Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 2010 a 2018 (8 anos).
+    Disto isto, é possível observar nos gráficos que na cidade de João Pessoa a média de chuvas (aproximadamente 32.8) é maior que a média de chuvas em Campina Grande (aproximadamente 14.0), apresentando-se maior que o dobro da quantidade em Campina Grande. 
+    As linhas em cor preto representam a média de chuva sob o gráfico de cada cidade.
   
 ```{r read4}
+cg <- climas %>%
+        filter(cidade == 'Campina Grande')
+
+jp <- climas %>%
+        filter(cidade == 'João Pessoa')
+
 climas %>% 
     group_by(cidade, ano)  %>%
     filter(ano >= 2010, ano < 2019 ) %>%
     summarise(media_chuva = mean(chuva)) %>%
     ggplot(mapping = aes(x = ano, y = media_chuva, color = cidade)) + 
+    geom_hline(aes(yintercept=mean(cg$chuva))) + 
+    geom_hline(aes(yintercept=mean(jp$chuva))) + 
     geom_line() +
     geom_point() +
-    #geom_smooth(aes(x = ano, y = media_chuva), method = lm, se = TRUE) +
     xlab("Ano") +
     ylab("Média de Chuva (ml)") +
     ggtitle("\t\t\tDistribuição média de chuva") + 
     scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 1))  +
-    scale_y_continuous(breaks = seq(from = 1, to = 300, by = 2))  
+    scale_y_continuous(breaks = seq(from = 1, to = 300, by = 2))
 ```
 
 ## Há diferença na distribuição de temperatura das cidades no período de chuva e estiagem?
