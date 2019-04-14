@@ -107,7 +107,7 @@ max_anuais %>% ggplot(mapping = aes(ano, Value, fill = Type)) + scale_y_continuo
 ## No geral, onde chove mais?
 
     Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 2010 a 2018 (8 anos).
-    Disto isto, é possível observar nos gráficos que na cidade de João Pessoa a média de chuvas (aproximadamente 32.8) é maior que a média de chuvas em Campina Grande (aproximadamente 14.0), apresentando-se maior que o dobro da quantidade em Campina Grande. 
+    Dito isto, é possível observar nos gráficos que na cidade de João Pessoa a média de chuvas (aproximadamente 32.8) é maior que a média de chuvas em Campina Grande (aproximadamente 14.0), apresentando-se maior que o dobro da quantidade em Campina Grande. 
     As linhas em cor preto representam a média de chuva sob o gráfico de cada cidade.
   
 ```{r read4}
