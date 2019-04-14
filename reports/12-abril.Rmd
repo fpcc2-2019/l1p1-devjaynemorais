@@ -1,0 +1,147 @@
+---
+title: "Temperatura JP x CG - Diogo, Jayne, Whendell"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  html_notebook:
+    code_folding: hide
+    fig_width: 7
+    theme: lumen
+    toc: yes
+    toc_float: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(ggbeeswarm)
+library(scales)
+theme_set(theme_bw())
+```
+
+```{r read}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTdddddd")
+
+semanas_ambas_ocorrencias <- climas %>% 
+    count(semana) %>% 
+    filter(n == 2) %>% 
+    pull(semana)
+
+# Selecionando somente as semanas onde há leitura nas duas cidades
+preprocessed_climas <- climas %>% 
+    filter(semana %in% semanas_ambas_ocorrencias) %>% 
+    filter(ano >= 2010, ano < 2019)
+
+preprocessed_climas_todos_anos <- climas %>% 
+    filter(semana %in% semanas_ambas_ocorrencias)
+```
+
+## Entre as cidades de João Pessoa e Campina Grande, onde é mais quente?
+
+    Para responder a essa pergunta, foram selecionados os anos compreendidos entre o intervalo de 2010 a 2018.
+    Os gráficos abaixo apresentam os valores médios das temperaturas médias, mínimas e máximas ao longo dos anos nas cidades de Campina Grande e João Pessoa. As linhas pontilhadas representam a média de todos os anos para cada uma das cidades.
+    
+```{r}
+medias_anuais_cg = preprocessed_climas %>% filter(cidade == "Campina Grande") %>% group_by(ano) %>% summarise(media_cg = mean(tmedia))
+
+medias_anuais_jp = preprocessed_climas %>% filter(cidade == "João Pessoa") %>% group_by(ano) %>% summarise(media_jp = mean(tmedia)) %>% select(media_jp)
+
+medias_anuais = bind_cols(medias_anuais_cg,medias_anuais_jp)
+
+media_cg_anos = mean(medias_anuais$media_cg)
+media_jp_anos = mean(medias_anuais$media_jp)
+    
+medias_anuais = medias_anuais %>% gather("Type", "Value",-ano)
+
+medias_anuais$Type[medias_anuais$Type == "media_cg"] <- "Campina Grande" 
+medias_anuais$Type[medias_anuais$Type == "media_jp"] <- "João Pessoa" 
+
+medias_anuais %>% ggplot(mapping = aes(ano, Value, fill = Type)) + scale_y_continuous(limits =c(15, 30), breaks =  seq(15,30,1.5), oob = rescale_none) + geom_col(position = "dodge") + scale_x_discrete(limits = c(2010:2018)) + labs(x = "Anos", y="Temperatura em C", fill = "Cidade") + geom_hline(aes(yintercept = media_cg_anos), colour="#990000", linetype="dashed") + geom_hline(aes(yintercept = media_jp_anos), colour="#0072B2", linetype="dashed") + ggtitle("  Média anual das temperaturas médias de 2010 a 2018")
+```
+
+```{r Mínima}
+min_anuais_cg = preprocessed_climas %>% filter(cidade == "Campina Grande") %>% group_by(ano) %>% summarise(min_cg = mean(tmin))
+
+min_anuais_jp = preprocessed_climas %>% filter(cidade == "João Pessoa") %>% group_by(ano) %>% summarise(min_jp = mean(tmin)) %>% select(min_jp)
+
+min_anuais = bind_cols(min_anuais_cg,min_anuais_jp)
+
+min_cg_anos = mean(min_anuais$min_cg)
+min_jp_anos = mean(min_anuais$min_jp)
+
+min_anuais = min_anuais %>% gather("Type", "Value",-ano)
+
+min_anuais$Type[min_anuais$Type == "min_cg"] <- "Campina Grande" 
+min_anuais$Type[min_anuais$Type == "min_jp"] <- "João Pessoa" 
+
+min_anuais %>% ggplot(mapping = aes(ano, Value, fill = Type)) + scale_y_continuous(limits =c(10, 25), breaks =  seq(10,25,1.5), oob = rescale_none) + geom_col(position = "dodge") + scale_x_discrete(limits = c(2010:2018)) + labs(x = "Anos", y="Temperatura em C", fill = "Cidade") + geom_hline(aes(yintercept = min_cg_anos), colour="#990000", linetype="dashed") + geom_hline(aes(yintercept = min_jp_anos), colour="#0072B2", linetype="dashed") + ggtitle(" Média anual das temperaturas mínimas de 2010 a 2018")
+
+```
+
+```{r Máxima}
+max_anuais_cg = preprocessed_climas %>% filter(cidade == "Campina Grande") %>% group_by(ano) %>% summarise(max_cg = mean(tmax))
+
+max_anuais_jp = preprocessed_climas %>% filter(cidade == "João Pessoa") %>% group_by(ano) %>% summarise(max_jp = mean(tmax)) %>% select(max_jp)
+
+max_anuais = bind_cols(max_anuais_cg,max_anuais_jp)
+
+max_cg_anos = mean(max_anuais$max_cg)
+max_jp_anos = mean(max_anuais$max_jp)
+
+
+max_anuais = max_anuais %>% gather("Type", "Value",-ano)
+
+max_anuais$Type[max_anuais$Type == "max_cg"] <- "Campina Grande" 
+max_anuais$Type[max_anuais$Type == "max_jp"] <- "João Pessoa" 
+
+max_anuais %>% ggplot(mapping = aes(ano, Value, fill = Type)) + scale_y_continuous(limits =c(20, 35), breaks =  seq(20,35,1.5), oob = rescale_none) + geom_col(position = "dodge") + scale_x_discrete(limits = c(2010:2018)) + labs(x = "Anos", y="Temperatura em C", fill = "Cidade") + geom_hline(aes(yintercept = max_cg_anos), colour="#990000", linetype="dashed") + geom_hline(aes(yintercept = max_jp_anos), colour="#0072B2", linetype="dashed") + ggtitle(" Média anual das temperaturas máximas de 2010 a 2018")
+```
+
+    A partir dos gráficos, podemos observar que as temperaturas em João Pessoa são superiores às de Campina Grande, seja ela mínima, média ou máxima. Essa diferença é mais acentuada nas temperaturas mínimas e médias, indicando que os "picos de calor" em ambas as cidades são bem próximos. 
+
+## No geral, onde chove mais?
+
+  Para determinar o local que acontece mais chuvas, considerou-se o a média de milímetros de chuva por cada cidade desde o ano de 2010 a 2018 (8 anos).
+  Disto isto, é possível observar nos gráficos que na cidade de João Pessoa a média de chuvas é maior que a média de chuvas em Campina Grande.
+  
+```{r read4}
+climas %>% 
+    group_by(cidade, ano)  %>%
+    filter(ano >= 2010, ano < 2019 ) %>%
+    summarise(media_chuva = mean(chuva)) %>%
+    ggplot(mapping = aes(x = ano, y = media_chuva, color = cidade)) + 
+    geom_line() +
+    geom_point() +
+    #geom_smooth(aes(x = ano, y = media_chuva), method = lm, se = TRUE) +
+    xlab("Ano") +
+    ylab("Média de Chuva (ml)") +
+    ggtitle("\t\t\tDistribuição média de chuva") + 
+    scale_x_continuous(breaks = seq(from = 1, to = 2018, by = 1))  +
+    scale_y_continuous(breaks = seq(from = 1, to = 300, by = 2))  
+```
+
+## Há diferença na distribuição de temperatura das cidades no período de chuva e estiagem?
+
+    Para o gráfico abaixo foi considerada a 'temporada de chuvas' o período compreendido entre os meses de março e julho, enquando a 'temporada de estiagem' compreende os meses de agosto e fevereiro.
+    Ao analisar os gráficos é possível perceber que em ambas as temporadas apresentadas, a média de temperatura da cidade de João Pessoa concentra-se em sua maior parte, superior à temperatura da cidade de Campina Grande durante o ano de 2018.
+    E portanto, também é possível perceber que a média de temperatura concentra-se menor nas duas cidades quando encontram-se em temporada de chuva.
+
+
+```{r}
+climas %>%
+    filter(ano == 2018) %>%
+    mutate(estacao = case_when(mes >= 3 & mes <= 7 ~ "Temporada de chuva", 
+                               TRUE ~ "Temporada de estiagem")) %>% 
+    ggplot(aes(x=tmedia, fill=cidade)) +
+    geom_density(alpha = .4) +
+    facet_grid(estacao ~ .) +
+    ggtitle("\t\tDistribuição da temperatura por estação")  +
+    ylab("Densidade") +
+    xlab("Temperatura média ºC")
+```
+
