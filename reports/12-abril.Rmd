@@ -1,5 +1,5 @@
 ---
-title: "Temperatura JP x CG - Diogo, Jayne, Whendell"
+title: "Temperatura JP x CG (Em equipe)"
 output:
   html_document:
     df_print: paged
@@ -22,6 +22,13 @@ library(ggbeeswarm)
 library(scales)
 theme_set(theme_bw())
 ```
+
+### Equipe:
+Diogo Florêncio de Lima
+
+Jayne de Morais Silva
+
+Whendell Feijó Magalhães
 
 ```{r read}
 climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
